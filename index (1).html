@@ -1,0 +1,1362 @@
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCE Email Templates</title>
+<style>
+  :root {
+    --navy:   #1A2E3A;
+    --teal:   #00A9C0;
+    --dkteal: #007A8E;
+    --lteal:  #E0F6FA;
+    --green:  #2E7D52;
+    --lgreen: #E8F5E9;
+    --gold:   #C9922A;
+    --lgold:  #FEF3DC;
+    --red:    #C0392B;
+    --lred:   #FFEBEE;
+    --white:  #FFFFFF;
+    --offwh:  #F7F9FA;
+    --lgrey:  #EEF1F3;
+    --mgrey:  #B0BEC5;
+    --dkgrey: #455A64;
+    --placeholder-bg: #FFF8E1;
+    --placeholder-border: #F59E0B;
+    --sidebar-w: 280px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--offwh);
+    color: var(--navy);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    background: var(--navy);
+    color: var(--white);
+    padding: 0 20px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  #topbar .logo {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+  }
+  #topbar .logo span { color: var(--teal); }
+  #search-wrap {
+    flex: 1;
+    max-width: 380px;
+    position: relative;
+  }
+  #search {
+    width: 100%;
+    padding: 7px 14px 7px 36px;
+    border-radius: 20px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+    font-size: 13px;
+    outline: none;
+    transition: background 0.2s;
+  }
+  #search::placeholder { color: rgba(255,255,255,0.5); }
+  #search:focus { background: rgba(255,255,255,0.18); }
+  .search-icon {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    pointer-events: none;
+  }
+  #topbar .spacer { flex: 1; }
+  #admin-btn {
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.6);
+    padding: 5px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  #admin-btn:hover { border-color: var(--teal); color: var(--teal); }
+  #admin-btn.active { background: var(--gold); border-color: var(--gold); color: var(--white); font-weight: 700; }
+
+  /* ── MAIN LAYOUT ── */
+  #main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--white);
+    border-right: 1px solid var(--lgrey);
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  #sidebar-header {
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--lgrey);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  #sidebar-header span {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mgrey);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  #add-cat-btn {
+    display: none;
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  #add-cat-btn:hover { background: var(--dkteal); }
+
+  #tree { padding: 8px 0 20px; flex: 1; }
+
+  .category {
+    margin-bottom: 2px;
+  }
+  .cat-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 0;
+    transition: background 0.15s;
+    gap: 8px;
+  }
+  .cat-header:hover { background: var(--lteal); }
+  .cat-arrow {
+    font-size: 10px;
+    color: var(--mgrey);
+    transition: transform 0.2s;
+    width: 12px;
+    flex-shrink: 0;
+  }
+  .cat-arrow.open { transform: rotate(90deg); color: var(--teal); }
+  .cat-icon { font-size: 13px; flex-shrink: 0; opacity: 0.55; filter: grayscale(1); }
+  .cat-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    flex: 1;
+  }
+  .cat-count {
+    font-size: 10px;
+    background: var(--lgrey);
+    color: var(--dkgrey);
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-weight: 600;
+  }
+  .cat-actions { display: none; gap: 4px; }
+  .cat-actions.show { display: flex; }
+  .cat-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+  .cat-action-btn:hover { opacity: 1; background: var(--lgrey); }
+
+  .templates-list {
+    display: none;
+    padding: 0 0 4px 28px;
+  }
+  .templates-list.open { display: block; }
+
+  .tpl-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px 6px 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin: 1px 8px 1px 0;
+    font-size: 12.5px;
+    color: var(--dkgrey);
+    gap: 6px;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .tpl-item:hover { background: var(--lteal); color: var(--navy); }
+  .tpl-item.active {
+    background: var(--teal);
+    color: var(--white);
+    font-weight: 600;
+  }
+  .tpl-item .tpl-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--mgrey);
+    flex-shrink: 0;
+  }
+  .tpl-item.active .tpl-dot { background: var(--white); }
+  .tpl-item .tpl-name { flex: 1; }
+  .tpl-item-actions { display: none; gap: 2px; }
+  .tpl-item:hover .tpl-item-actions,
+  .tpl-item.active .tpl-item-actions { display: flex; }
+  .tpl-item-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 11px; padding: 1px 3px;
+    border-radius: 3px; opacity: 0.7;
+  }
+  .tpl-item.active .tpl-item-btn { color: var(--white); }
+  .tpl-item-btn:hover { opacity: 1; background: rgba(255,255,255,0.2); }
+  .add-tpl-btn {
+    display: none;
+    width: calc(100% - 8px);
+    margin: 4px 0 0 0;
+    padding: 5px 8px;
+    background: none;
+    border: 1px dashed var(--mgrey);
+    border-radius: 6px;
+    color: var(--mgrey);
+    font-size: 11.5px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .add-tpl-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--lteal); }
+  .add-tpl-btn.show { display: block; }
+
+  /* ── CONTENT PANEL ── */
+  #content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #welcome {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--mgrey);
+  }
+  #welcome .welcome-icon { font-size: 56px; margin-bottom: 16px; }
+  #welcome h2 { font-size: 20px; color: var(--dkgrey); margin-bottom: 8px; }
+  #welcome p { font-size: 13.5px; line-height: 1.6; max-width: 360px; }
+
+  #template-view { display: none; flex-direction: column; gap: 20px; }
+
+  .tpl-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .tpl-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    flex: 1;
+  }
+  .tpl-category-tag {
+    background: var(--lteal);
+    color: var(--dkteal);
+    border-radius: 12px;
+    padding: 3px 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .tpl-edit-actions {
+    display: none;
+    gap: 8px;
+    align-self: center;
+  }
+  .tpl-edit-actions.show { display: flex; }
+  .action-btn {
+    padding: 6px 16px;
+    border-radius: 16px;
+    border: none;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .btn-edit { background: var(--lgold); color: var(--gold); }
+  .btn-edit:hover { background: var(--gold); color: var(--white); }
+  .btn-delete { background: var(--lred); color: var(--red); }
+  .btn-delete:hover { background: var(--red); color: var(--white); }
+
+  /* Language tabs */
+  .lang-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--lgrey);
+    padding-bottom: 0;
+  }
+  .lang-tab {
+    padding: 7px 18px;
+    border-radius: 8px 8px 0 0;
+    border: none;
+    background: var(--lgrey);
+    color: var(--dkgrey);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: -2px;
+    border-bottom: 2px solid transparent;
+  }
+  .lang-tab:hover { background: var(--lteal); color: var(--dkteal); }
+  .lang-tab.active {
+    background: var(--white);
+    color: var(--teal);
+    border-bottom: 2px solid var(--teal);
+  }
+  .lang-flag { margin-right: 5px; }
+
+  /* Email preview */
+  .email-card {
+    background: var(--white);
+    border-radius: 10px;
+    border: 1px solid var(--lgrey);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .email-card-header {
+    background: var(--offwh);
+    border-bottom: 1px solid var(--lgrey);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .email-card-header .subject-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mgrey);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .email-subject {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-top: 3px;
+  }
+  .copy-btn {
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .copy-btn:hover { background: var(--dkteal); }
+  .copy-btn.copied { background: var(--green); }
+  .email-body {
+    padding: 22px 24px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--navy);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .email-body .placeholder {
+    background: var(--placeholder-bg);
+    border: 1px solid var(--placeholder-border);
+    border-radius: 4px;
+    padding: 0 4px;
+    color: #92400E;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .placeholder-legend {
+    background: var(--lgold);
+    border: 1px solid #F3D28A;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12.5px;
+    color: #78350F;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Search results */
+  #search-results {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .search-result-item {
+    background: var(--white);
+    border: 1px solid var(--lgrey);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .search-result-item:hover { border-color: var(--teal); background: var(--lteal); }
+  .sr-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+  .sr-cat { font-size: 11.5px; color: var(--teal); margin-top: 2px; }
+  .sr-preview { font-size: 12px; color: var(--dkgrey); margin-top: 4px; line-height: 1.5; }
+  mark { background: #FEF08A; border-radius: 2px; padding: 0 1px; }
+
+  /* ── MODALS ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 28px 32px;
+    width: 90%;
+    max-width: 560px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { font-size: 18px; color: var(--navy); margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dkgrey);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--lgrey);
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: var(--navy);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+    background: var(--offwh);
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--teal); background: var(--white); }
+  .form-group textarea { min-height: 140px; resize: vertical; line-height: 1.6; }
+  .form-group small { font-size: 11px; color: var(--mgrey); margin-top: 4px; display: block; }
+  .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+  .btn-cancel {
+    padding: 8px 20px; border-radius: 20px;
+    border: 1.5px solid var(--lgrey);
+    background: var(--white); color: var(--dkgrey);
+    font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  .btn-cancel:hover { border-color: var(--mgrey); }
+  .btn-save {
+    padding: 8px 22px; border-radius: 20px;
+    border: none; background: var(--teal);
+    color: var(--white); font-size: 13px;
+    cursor: pointer; font-weight: 700;
+  }
+  .btn-save:hover { background: var(--dkteal); }
+  .btn-danger {
+    padding: 8px 22px; border-radius: 20px;
+    border: none; background: var(--red);
+    color: var(--white); font-size: 13px;
+    cursor: pointer; font-weight: 700;
+  }
+  .btn-danger:hover { background: #922B21; }
+
+  /* Password modal */
+  #pw-modal .modal { max-width: 360px; text-align: center; }
+  #pw-modal .modal h2 { margin-bottom: 8px; }
+  #pw-modal .modal p { font-size: 13px; color: var(--dkgrey); margin-bottom: 20px; }
+  #pw-input { text-align: center; font-size: 16px; letter-spacing: 3px; }
+  #pw-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 22px;
+    border-radius: 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    z-index: 2000;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Admin banner */
+  #admin-banner {
+    display: none;
+    background: var(--gold);
+    color: var(--white);
+    text-align: center;
+    padding: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
+  #admin-banner.show { display: block; }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    color: var(--mgrey);
+    padding: 40px;
+    font-size: 14px;
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--lgrey); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">DCE <span>Templates</span></div>
+  <div id="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Search templates…" autocomplete="off">
+  </div>
+  <div class="spacer"></div>
+  <button id="admin-btn" onclick="openPwModal()" class="active">⚙ Admin: ON</button>
+</div>
+
+<!-- ADMIN BANNER -->
+<div id="admin-banner" class="show">⚙️ Admin Mode Active — You can add, edit and delete templates and categories &nbsp;|&nbsp; <button onclick="exportHTML()" style="background:white;color:#C9922A;border:none;border-radius:12px;padding:3px 14px;font-size:12px;font-weight:700;cursor:pointer;">⬇ Export &amp; Save File</button></div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span>Categories</span>
+      <button id="add-cat-btn" onclick="openAddCatModal()" style="display: block;">+ Add</button>
+    </div>
+    <div id="tree"><div class="category">
+      <div class="cat-header" onclick="toggleCat('payroll')">
+        <span class="cat-arrow" id="arrow-payroll">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Payroll</span>
+        <span class="cat-count">2</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('payroll')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('payroll')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-payroll">
+        
+          <div class="tpl-item " id="tpl-t1" onclick="openTemplate('t1')">
+            <span class="tpl-dot"></span>
+            <span class="tpl-name">First Contact — Payroll</span>
+          </div>
+        
+          <div class="tpl-item " id="tpl-t2" onclick="openTemplate('t2')">
+            <span class="tpl-dot"></span>
+            <span class="tpl-name">Follow-up — No Response</span>
+          </div>
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('payroll')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('returned-paper')">
+        <span class="cat-arrow open" id="arrow-returned-paper">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Returned Paper CE</span>
+        <span class="cat-count">1</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('returned-paper')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('returned-paper')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list open" id="list-returned-paper">
+        
+          <div class="tpl-item active" id="tpl-t1784613836826" onclick="openTemplate('t1784613836826')">
+            <span class="tpl-dot"></span>
+            <span class="tpl-name">First contact</span>
+          </div>
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('returned-paper')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('not-returned')">
+        <span class="cat-arrow" id="arrow-not-returned">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Didn't Return Paper CE</span>
+        <span class="cat-count">1</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('not-returned')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('not-returned')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-not-returned">
+        
+          <div class="tpl-item " id="tpl-t4" onclick="openTemplate('t4')">
+            <span class="tpl-dot"></span>
+            <span class="tpl-name">Paper CE Not Returned — First Notice</span>
+          </div>
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('not-returned')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('code-redeemed')">
+        <span class="cat-arrow" id="arrow-code-redeemed">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Code Redeemed No Enrolment</span>
+        <span class="cat-count">0</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('code-redeemed')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('code-redeemed')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-code-redeemed">
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('code-redeemed')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('opted-out')">
+        <span class="cat-arrow" id="arrow-opted-out">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Opted Out</span>
+        <span class="cat-count">1</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('opted-out')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('opted-out')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-opted-out">
+        
+          <div class="tpl-item " id="tpl-t3" onclick="openTemplate('t3')">
+            <span class="tpl-dot"></span>
+            <span class="tpl-name">Re-engagement — Opted Out</span>
+          </div>
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('opted-out')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('approved-not-issued')">
+        <span class="cat-arrow" id="arrow-approved-not-issued">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Approved Not Yet Issued</span>
+        <span class="cat-count">0</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('approved-not-issued')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('approved-not-issued')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-approved-not-issued">
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('approved-not-issued')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('rejected')">
+        <span class="cat-arrow" id="arrow-rejected">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Rejected Enrolment</span>
+        <span class="cat-count">0</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('rejected')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('rejected')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-rejected">
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('rejected')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('past-appointment')">
+        <span class="cat-arrow" id="arrow-past-appointment">▶</span>
+        <span class="cat-icon">📁</span>
+        <span class="cat-name">Past Appointment</span>
+        <span class="cat-count">0</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('past-appointment')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('past-appointment')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-past-appointment">
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('past-appointment')">+ Add template</button>
+      </div>
+    </div><div class="category">
+      <div class="cat-header" onclick="toggleCat('client-delay')">
+        <span class="cat-arrow" id="arrow-client-delay">▶</span>
+        <span class="cat-icon">⏸️</span>
+        <span class="cat-name">Client Delay</span>
+        <span class="cat-count">1</span>
+        <div class="cat-actions show" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('client-delay')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('client-delay')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-client-delay">
+        
+          <div class="tpl-item " id="tpl-t5" onclick="openTemplate('t5')">
+            <span class="tpl-dot"></span>
+            <span class="tpl-name">Client Delay — On-Hold Notification</span>
+          </div>
+        
+        <button class="add-tpl-btn show" onclick="openAddTplModal('client-delay')">+ Add template</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+
+    <!-- Welcome -->
+    <div id="welcome" style="display: none;">
+      <div class="welcome-icon">📬</div>
+      <h2>Select a template to get started</h2>
+      <p>Browse the categories on the left, or use the search bar to find a template by keyword.</p>
+    </div>
+
+    <!-- Search Results -->
+    <div id="search-results" style="display: none;"></div>
+
+    <!-- Template View -->
+    <div id="template-view" style="display: flex;">
+      <div class="tpl-title-row">
+        <div class="tpl-title" id="tv-name">First contact</div>
+        <div class="tpl-category-tag" id="tv-cat">📁 Returned Paper CE</div>
+        <div class="tpl-edit-actions show" id="tv-actions">
+          <button class="action-btn btn-edit" onclick="openEditModal()">✏️ Edit</button>
+          <button class="action-btn btn-delete" onclick="confirmDelete()">🗑️ Delete</button>
+        </div>
+      </div>
+
+      <div class="placeholder-legend">
+        ⚠️ <strong>Fill in all highlighted fields</strong> before sending — replace each <span class="placeholder" style="display:inline;">[placeholder]</span> with the correct information.
+      </div>
+
+      <div class="lang-tabs">
+        <button class="lang-tab active" onclick="switchLang('en', this)"><span class="lang-flag">🇬🇧</span> English</button>
+        <button class="lang-tab" onclick="switchLang('es', this)"><span class="lang-flag">🇪🇸</span> Spanish</button>
+        <button class="lang-tab" onclick="switchLang('fr', this)"><span class="lang-flag">🇫🇷</span> French</button>
+      </div>
+
+      <div class="email-card">
+        <div class="email-card-header">
+          <div>
+            <div class="subject-label">Subject</div>
+            <div class="email-subject" id="tv-subject">Digital CE option is available</div>
+          </div>
+          <button class="copy-btn" id="copy-btn" onclick="copyTemplate()" data-text="Subject: Digital CE option is available
+
+This is just a test">📋 Copy Email</button>
+        </div>
+        <div class="email-body" id="tv-body">This is just a test</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MODALS ── -->
+
+<!-- Password -->
+<div class="modal-overlay" id="pw-modal">
+  <div class="modal">
+    <h2>🔐 Admin Access</h2>
+    <p>Enter the admin password to unlock editing.</p>
+    <div class="form-group">
+      <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    </div>
+    <div id="pw-error" style="display: block;">Incorrect password. Please try again.</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('pw-modal')">Cancel</button>
+      <button class="btn-save" onclick="checkPw()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Template -->
+<div class="modal-overlay" id="tpl-modal">
+  <div class="modal">
+    <h2 id="tpl-modal-title">Add Template</h2>
+    <div class="form-group">
+      <label>Template Name</label>
+      <input type="text" id="f-name" placeholder="e.g. First Contact">
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="f-cat"><option value="payroll">📁 Payroll</option><option value="returned-paper" selected="">📁 Returned Paper CE</option><option value="not-returned">📁 Didn't Return Paper CE</option><option value="code-redeemed">📁 Code Redeemed No Enrolment</option><option value="opted-out">📁 Opted Out</option><option value="approved-not-issued">📁 Approved Not Yet Issued</option><option value="rejected">📁 Rejected Enrolment</option><option value="past-appointment">📁 Past Appointment</option><option value="client-delay">⏸️ Client Delay</option></select>
+    </div>
+    <div class="form-group">
+      <label>Subject Line (English)</label>
+      <input type="text" id="f-subject-en" placeholder="e.g. Your DCE Enrolment — [Beneficiary Name]">
+    </div>
+    <div class="form-group">
+      <label>Email Body (English)</label>
+      <textarea id="f-body-en" placeholder="Write the English template here. Use [Placeholder] for fields to fill in."></textarea>
+      <small>Use [square brackets] for placeholders — e.g. [Beneficiary Name], [UID], [Date]</small>
+    </div>
+    <div class="form-group">
+      <label>Subject Line (Spanish) <span style="color:var(--mgrey);font-weight:400;">(leave blank to auto-translate)</span></label>
+      <input type="text" id="f-subject-es" placeholder="Optional — auto-generated if empty">
+    </div>
+    <div class="form-group">
+      <label>Email Body (Spanish)</label>
+      <textarea id="f-body-es" placeholder="Optional — auto-generated if empty"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Subject Line (French) <span style="color:var(--mgrey);font-weight:400;">(leave blank to auto-translate)</span></label>
+      <input type="text" id="f-subject-fr" placeholder="Optional — auto-generated if empty">
+    </div>
+    <div class="form-group">
+      <label>Email Body (French)</label>
+      <textarea id="f-body-fr" placeholder="Optional — auto-generated if empty"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('tpl-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveTemplate()">Save Template</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Category -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal" style="max-width:380px;">
+    <h2 id="cat-modal-title">Edit Category</h2>
+    <div class="form-group">
+      <label>Category Name</label>
+      <input type="text" id="f-cat-name" placeholder="e.g. Reenrolments">
+    </div>
+    <div class="form-group">
+      <label>Icon (emoji)</label>
+      <input type="text" id="f-cat-icon" placeholder="e.g. 📋" maxlength="4">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('cat-modal')">Cancel</button>
+      <button class="btn-save" onclick="saveCategory()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal" style="max-width:380px;text-align:center;">
+    <h2>🗑️ Delete Template</h2>
+    <p style="font-size:14px;color:var(--dkgrey);margin:12px 0 24px;">Are you sure you want to delete <strong id="del-name">"Didn't return paper- first notification"</strong>? This cannot be undone.</p>
+    <div class="modal-btns" style="justify-content:center;">
+      <button class="btn-cancel" onclick="closeModal('del-modal')">Cancel</button>
+      <button class="btn-danger" onclick="deleteTemplate()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="">Template added ✓</div>
+
+<script>
+// ── DEFAULT DATA ──────────────────────────────────────────────────
+const DEFAULT_CATEGORIES = [{"id":"payroll","name":"Payroll","icon":"📁"},{"id":"returned-paper","name":"Returned Paper CE","icon":"📁"},{"id":"not-returned","name":"Didn't Return Paper CE","icon":"📁"},{"id":"code-redeemed","name":"Code Redeemed No Enrolment","icon":"📁"},{"id":"opted-out","name":"Opted Out","icon":"📁"},{"id":"approved-not-issued","name":"Approved Not Yet Issued","icon":"📁"},{"id":"rejected","name":"Rejected Enrolment","icon":"📁"},{"id":"past-appointment","name":"Past Appointment","icon":"📁"},{"id":"client-delay","name":"Client Delay","icon":"⏸️"}];
+
+const DEFAULT_TEMPLATES = [{"id":"t1","categoryId":"payroll","name":"First Contact — Payroll","en":{"subject":"Your DCE Enrolment — Action Required | [Beneficiary Name]","body":"Dear [Beneficiary Name],\n\nI hope this message finds you well.\n\nMy name is [Agent Name] and I am contacting you regarding your Digital Certificate of Enrolment (DCE) for the current cycle.\n\nOur records show that you are listed under the [Month Year] payroll and your DCE issuance is now due. Enrolling digitally is quick, secure, and ensures your benefits are processed without delay.\n\nTo proceed, please contact us at your earliest convenience using the details below, or visit your nearest enrolment point.\n\n📌 UID: [UID]\n📅 Deadline: [Deadline Date]\n\nShould you have any questions or require assistance, please do not hesitate to reach out.\n\nKind regards,\n[Agent Name]\nDCE Issuance Team"},"es":{"subject":"Su inscripción DCE — Acción requerida | [Nombre del beneficiario]","body":"Estimado/a [Nombre del beneficiario],\n\nEspero que este mensaje le encuentre bien.\n\nMe llamo [Nombre del agente] y me pongo en contacto con usted en relación con su Certificado Digital de Inscripción (DCE) para el ciclo actual.\n\nNuestros registros muestran que usted figura en la nómina de [Mes Año] y su emisión de DCE ya es necesaria. La inscripción digital es rápida, segura y garantiza que sus beneficios se procesen sin demora.\n\nPara continuar, comuníquese con nosotros a la brevedad posible utilizando los datos a continuación, o visite su punto de inscripción más cercano.\n\n📌 UID: [UID]\n📅 Fecha límite: [Fecha límite]\n\nSi tiene alguna pregunta o necesita asistencia, no dude en comunicarse con nosotros.\n\nAtentamente,\n[Nombre del agente]\nEquipo de Emisión DCE"},"fr":{"subject":"Votre inscription DCE — Action requise | [Nom du bénéficiaire]","body":"Cher/Chère [Nom du bénéficiaire],\n\nJ'espère que ce message vous trouve en bonne santé.\n\nJe m'appelle [Nom de l'agent] et je vous contacte au sujet de votre Certificat Numérique d'Inscription (DCE) pour le cycle en cours.\n\nNos dossiers indiquent que vous figurez sur la liste de paie de [Mois Année] et que l'émission de votre DCE est désormais nécessaire. L'inscription numérique est rapide, sécurisée et garantit que vos prestations sont traitées sans délai.\n\nPour procéder, veuillez nous contacter dans les meilleurs délais en utilisant les coordonnées ci-dessous, ou visitez votre point d'inscription le plus proche.\n\n📌 UID : [UID]\n📅 Date limite : [Date limite]\n\nSi vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter.\n\nCordialement,\n[Nom de l'agent]\nÉquipe d'émission DCE"}},{"id":"t2","categoryId":"payroll","name":"Follow-up — No Response","en":{"subject":"Follow-Up: DCE Enrolment Pending | [Beneficiary Name] | [UID]","body":"Dear [Beneficiary Name],\n\nThis is a follow-up to our previous message regarding your DCE enrolment.\n\nWe have not yet received a response and would like to remind you that your enrolment deadline is approaching on [Deadline Date].\n\nPlease contact us as soon as possible to avoid any disruption to your benefits.\n\n📌 UID: [UID]\n📞 Contact: [Contact Number / Email]\n\nWe are here to assist you through the process.\n\nKind regards,\n[Agent Name]\nDCE Issuance Team"},"es":{"subject":"Seguimiento: inscripción DCE pendiente | [Nombre del beneficiario] | [UID]","body":"Estimado/a [Nombre del beneficiario],\n\nEste es un seguimiento a nuestro mensaje anterior sobre su inscripción DCE.\n\nAún no hemos recibido respuesta y nos gustaría recordarle que la fecha límite de su inscripción se acerca el [Fecha límite].\n\nPor favor, comuníquese con nosotros a la brevedad para evitar cualquier interrupción en sus beneficios.\n\n📌 UID: [UID]\n📞 Contacto: [Número de contacto / Correo electrónico]\n\nEstamos aquí para asistirle durante el proceso.\n\nAtentamente,\n[Nombre del agente]\nEquipo de Emisión DCE"},"fr":{"subject":"Relance : inscription DCE en attente | [Nom du bénéficiaire] | [UID]","body":"Cher/Chère [Nom du bénéficiaire],\n\nCeci est un suivi de notre message précédent concernant votre inscription DCE.\n\nNous n'avons pas encore reçu de réponse et nous souhaitons vous rappeler que votre date limite d'inscription approche le [Date limite].\n\nVeuillez nous contacter dès que possible afin d'éviter toute interruption de vos prestations.\n\n📌 UID : [UID]\n📞 Contact : [Numéro de contact / E-mail]\n\nNous sommes là pour vous accompagner tout au long du processus.\n\nCordialement,\n[Nom de l'agent]\nÉquipe d'émission DCE"}},{"id":"t3","categoryId":"opted-out","name":"Re-engagement — Opted Out","en":{"subject":"We'd Like to Reconnect | [Beneficiary Name] | [UID]","body":"Dear [Beneficiary Name],\n\nI hope you are doing well.\n\nWe understand that you previously chose to opt out of the Digital Certificate of Enrolment (DCE). We completely respect your decision and are reaching out only to let you know that the process has been improved and we are happy to assist if you wish to reconsider.\n\nThe DCE is now faster, more accessible, and fully secure. Many beneficiaries who were initially hesitant have found it much easier than expected.\n\nIf you would like to give it another try, or simply have questions, please feel free to contact us. There is absolutely no pressure.\n\n📌 UID: [UID]\n📞 Contact: [Contact Number / Email]\n\nThank you for your time.\n\nKind regards,\n[Agent Name]\nDCE Issuance Team"},"es":{"subject":"Nos gustaría volver a conectar con usted | [Nombre del beneficiario] | [UID]","body":"Estimado/a [Nombre del beneficiario],\n\nEsperamos que se encuentre bien.\n\nEntendemos que anteriormente eligió no participar en el Certificado Digital de Inscripción (DCE). Respetamos completamente su decisión y nos comunicamos solo para informarle que el proceso ha mejorado y estamos disponibles para asistirle si desea reconsiderar.\n\nEl DCE es ahora más rápido, accesible y completamente seguro. Muchos beneficiarios que inicialmente dudaron lo encontraron mucho más sencillo de lo esperado.\n\nSi desea intentarlo nuevamente, o simplemente tiene preguntas, no dude en contactarnos. No hay ninguna presión.\n\n📌 UID: [UID]\n📞 Contacto: [Número de contacto / Correo electrónico]\n\nGracias por su tiempo.\n\nAtentamente,\n[Nombre del agente]\nEquipo de Emisión DCE"},"fr":{"subject":"Nous souhaitons reprendre contact | [Nom du bénéficiaire] | [UID]","body":"Cher/Chère [Nom du bénéficiaire],\n\nJ'espère que vous allez bien.\n\nNous comprenons que vous avez précédemment choisi de ne pas participer au Certificat Numérique d'Inscription (DCE). Nous respectons entièrement votre décision et vous contactons uniquement pour vous informer que le processus a été amélioré et que nous sommes disponibles pour vous aider si vous souhaitez reconsidérer.\n\nLe DCE est désormais plus rapide, plus accessible et entièrement sécurisé. De nombreux bénéficiaires initialement hésitants l'ont trouvé bien plus simple que prévu.\n\nSi vous souhaitez réessayer, ou si vous avez simplement des questions, n'hésitez pas à nous contacter. Il n'y a aucune pression.\n\n📌 UID : [UID]\n📞 Contact : [Numéro de contact / E-mail]\n\nMerci pour votre temps.\n\nCordialement,\n[Nom de l'agent]\nÉquipe d'émission DCE"}},{"id":"t4","categoryId":"not-returned","name":"Paper CE Not Returned — First Notice","en":{"subject":"Paper CE Not Received | Action Required | [Beneficiary Name] | [UID]","body":"Dear [Beneficiary Name],\n\nI hope this message finds you well.\n\nOur records indicate that your Paper Certificate of Enrolment (CE) for [Year] has not yet been returned to our office.\n\nReturning your paper CE is an important step to ensure your enrolment status is updated and your benefits continue without interruption.\n\nPlease arrange to return the form at your earliest convenience, or contact us if you need assistance or a replacement copy.\n\n📌 UID: [UID]\n📅 Please return by: [Deadline Date]\n📍 Return to: [Office Address / Contact Details]\n\nIf you have already sent your form, please disregard this message.\n\nKind regards,\n[Agent Name]\nDCE Issuance Team"},"es":{"subject":"CE en papel no recibido | Acción requerida | [Nombre del beneficiario] | [UID]","body":"Estimado/a [Nombre del beneficiario],\n\nEsperamos que se encuentre bien.\n\nNuestros registros indican que su Certificado de Inscripción (CE) en papel para [Año] aún no ha sido devuelto a nuestra oficina.\n\nDevolver su CE en papel es un paso importante para garantizar que su estado de inscripción sea actualizado y sus beneficios continúen sin interrupción.\n\nPor favor, tramite la devolución del formulario a la brevedad posible, o contáctenos si necesita asistencia o una copia de reemplazo.\n\n📌 UID: [UID]\n📅 Por favor devuelva antes de: [Fecha límite]\n📍 Devolver a: [Dirección de la oficina / Datos de contacto]\n\nSi ya ha enviado su formulario, por favor ignore este mensaje.\n\nAtentamente,\n[Nombre del agente]\nEquipo de Emisión DCE"},"fr":{"subject":"CE papier non reçu | Action requise | [Nom du bénéficiaire] | [UID]","body":"Cher/Chère [Nom du bénéficiaire],\n\nJ'espère que ce message vous trouve en bonne santé.\n\nNos dossiers indiquent que votre Certificat d'Inscription (CE) papier pour [Année] n'a pas encore été retourné à notre bureau.\n\nLe retour de votre CE papier est une étape importante pour garantir que votre statut d'inscription est mis à jour et que vos prestations continuent sans interruption.\n\nVeuillez organiser le retour du formulaire dès que possible, ou nous contacter si vous avez besoin d'aide ou d'un exemplaire de remplacement.\n\n📌 UID : [UID]\n📅 À retourner avant le : [Date limite]\n📍 À retourner à : [Adresse du bureau / Coordonnées]\n\nSi vous avez déjà envoyé votre formulaire, veuillez ignorer ce message.\n\nCordialement,\n[Nom de l'agent]\nÉquipe d'émission DCE"}},{"id":"t5","categoryId":"client-delay","name":"Client Delay — On-Hold Notification","en":{"subject":"Your DCE Enrolment — On Hold | [Beneficiary Name] | [UID]","body":"Dear [Beneficiary Name],\n\nThank you for your continued patience.\n\nWe are writing to let you know that your DCE enrolment has been placed on hold as per your request / due to [reason for delay].\n\nWe will follow up with you on [Follow-up Date] to check on your availability and progress your enrolment at that time.\n\nIf your situation changes before then and you are ready to proceed sooner, please do not hesitate to contact us.\n\n📌 UID: [UID]\n📞 Contact: [Contact Number / Email]\n\nWe look forward to supporting you through the process.\n\nKind regards,\n[Agent Name]\nDCE Issuance Team"},"es":{"subject":"Su inscripción DCE — En espera | [Nombre del beneficiario] | [UID]","body":"Estimado/a [Nombre del beneficiario],\n\nGracias por su continua paciencia.\n\nLe escribimos para informarle que su inscripción DCE ha sido puesta en espera según su solicitud / debido a [motivo del retraso].\n\nNos comunicaremos con usted el [Fecha de seguimiento] para verificar su disponibilidad y avanzar con su inscripción en ese momento.\n\nSi su situación cambia antes de esa fecha y está listo/a para continuar antes, no dude en contactarnos.\n\n📌 UID: [UID]\n📞 Contacto: [Número de contacto / Correo electrónico]\n\nEsperamos poder apoyarle durante el proceso.\n\nAtentamente,\n[Nombre del agente]\nEquipo de Emisión DCE"},"fr":{"subject":"Votre inscription DCE — En attente | [Nom du bénéficiaire] | [UID]","body":"Cher/Chère [Nom du bénéficiaire],\n\nMerci pour votre patience continue.\n\nNous vous écrivons pour vous informer que votre inscription DCE a été mise en attente conformément à votre demande / en raison de [raison du retard].\n\nNous vous recontacterons le [Date de suivi] pour vérifier votre disponibilité et faire avancer votre inscription à ce moment.\n\nSi votre situation change avant cette date et que vous êtes prêt(e) à procéder plus tôt, n'hésitez pas à nous contacter.\n\n📌 UID : [UID]\n📞 Contact : [Numéro de contact / E-mail]\n\nNous sommes impatients de vous accompagner tout au long du processus.\n\nCordialement,\n[Nom de l'agent]\nÉquipe d'émission DCE"}},{"id":"t1784613836826","categoryId":"returned-paper","name":"First contact","en":{"subject":"Digital CE option is available","body":"This is just a test"},"es":{"subject":"Digital CE option is available","body":"This is just a test"},"fr":{"subject":"Digital CE option is available","body":"This is just a test"}}];
+
+// ── STATE ─────────────────────────────────────────────────────────
+const ADMIN_PW = 'S000*';
+let isAdmin = false;
+let currentLang = 'en';
+let currentTplId = null;
+let editingTplId = null;
+let editingCatId = null;
+
+function loadData() {
+  const cats = localStorage.getItem('dce_categories');
+  const tpls = localStorage.getItem('dce_templates');
+  return {
+    categories: cats ? JSON.parse(cats) : JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+    templates:  tpls ? JSON.parse(tpls)  : JSON.parse(JSON.stringify(DEFAULT_TEMPLATES)),
+  };
+}
+
+function saveData(data) {
+  localStorage.setItem('dce_categories', JSON.stringify(data.categories));
+  localStorage.setItem('dce_templates',  JSON.stringify(data.templates));
+}
+
+let data = loadData();
+
+// ── RENDER TREE ───────────────────────────────────────────────────
+function renderTree() {
+  const tree = document.getElementById('tree');
+  tree.innerHTML = '';
+  data.categories.forEach(cat => {
+    const catTpls = data.templates.filter(t => t.categoryId === cat.id);
+    const div = document.createElement('div');
+    div.className = 'category';
+    div.innerHTML = `
+      <div class="cat-header" onclick="toggleCat('${cat.id}')">
+        <span class="cat-arrow" id="arrow-${cat.id}">▶</span>
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-name">${cat.name}</span>
+        <span class="cat-count">${catTpls.length}</span>
+        <div class="cat-actions ${isAdmin ? 'show' : ''}" onclick="event.stopPropagation()">
+          <button class="cat-action-btn" title="Rename" onclick="openEditCatModal('${cat.id}')">✏️</button>
+          <button class="cat-action-btn" title="Delete" onclick="deleteCat('${cat.id}')">🗑️</button>
+        </div>
+      </div>
+      <div class="templates-list" id="list-${cat.id}">
+        ${catTpls.map(t => `
+          <div class="tpl-item ${t.id === currentTplId ? 'active' : ''}" id="tpl-${t.id}" onclick="openTemplate('${t.id}')">
+            <span class="tpl-dot"></span>
+            <span class="tpl-name">${t.name}</span>
+          </div>
+        `).join('')}
+        <button class="add-tpl-btn ${isAdmin ? 'show' : ''}" onclick="openAddTplModal('${cat.id}')">+ Add template</button>
+      </div>
+    `;
+    tree.appendChild(div);
+  });
+  // Re-open active category
+  if (currentTplId) {
+    const tpl = data.templates.find(t => t.id === currentTplId);
+    if (tpl) openCat(tpl.categoryId);
+  }
+  // Admin controls
+  document.getElementById('add-cat-btn').style.display = isAdmin ? 'block' : 'none';
+}
+
+function toggleCat(id) {
+  const list  = document.getElementById(`list-${id}`);
+  const arrow = document.getElementById(`arrow-${id}`);
+  const isOpen = list.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.templates-list').forEach(l => l.classList.remove('open'));
+  document.querySelectorAll('.cat-arrow').forEach(a => a.classList.remove('open'));
+  if (!isOpen) {
+    list.classList.add('open');
+    arrow.classList.add('open');
+  }
+}
+
+function openCat(id) {
+  const list  = document.getElementById(`list-${id}`);
+  const arrow = document.getElementById(`arrow-${id}`);
+  if (list) list.classList.add('open');
+  if (arrow) arrow.classList.add('open');
+}
+
+// ── OPEN TEMPLATE ─────────────────────────────────────────────────
+function openTemplate(id) {
+  currentTplId = id;
+  currentLang = 'en';
+  renderTree();
+  const tpl = data.templates.find(t => t.id === id);
+  if (!tpl) return;
+  const cat = data.categories.find(c => c.id === tpl.categoryId);
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('search-results').style.display = 'none';
+  const tv = document.getElementById('template-view');
+  tv.style.display = 'flex';
+  document.getElementById('tv-name').textContent = tpl.name;
+  document.getElementById('tv-cat').textContent = cat ? `${cat.icon} ${cat.name}` : '';
+  document.getElementById('tv-actions').className = `tpl-edit-actions ${isAdmin ? 'show' : ''}`;
+  // Reset lang tabs
+  document.querySelectorAll('.lang-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+  renderEmailBody(tpl, 'en');
+}
+
+function renderEmailBody(tpl, lang) {
+  const langData = tpl[lang] || tpl['en'];
+  document.getElementById('tv-subject').textContent = langData.subject || '';
+  const body = langData.body || '';
+  document.getElementById('tv-body').innerHTML = highlightPlaceholders(body);
+  // Store plain text for copy
+  document.getElementById('copy-btn').dataset.text = `Subject: ${langData.subject}\n\n${body}`;
+  document.getElementById('copy-btn').classList.remove('copied');
+  document.getElementById('copy-btn').innerHTML = '📋 Copy Email';
+}
+
+function highlightPlaceholders(text) {
+  const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return escaped.replace(/\[([^\]]+)\]/g, '<span class="placeholder">[$1]</span>');
+}
+
+function switchLang(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const tpl = data.templates.find(t => t.id === currentTplId);
+  if (tpl) renderEmailBody(tpl, lang);
+}
+
+function copyTemplate() {
+  const btn = document.getElementById('copy-btn');
+  const text = btn.dataset.text;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerHTML = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copy Email';
+      btn.classList.remove('copied');
+    }, 2500);
+  });
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  if (!q) {
+    document.getElementById('search-results').style.display = 'none';
+    if (currentTplId) {
+      document.getElementById('template-view').style.display = 'flex';
+      document.getElementById('welcome').style.display = 'none';
+    } else {
+      document.getElementById('welcome').style.display = 'flex';
+      document.getElementById('template-view').style.display = 'none';
+    }
+    return;
+  }
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('template-view').style.display = 'none';
+  const sr = document.getElementById('search-results');
+  sr.style.display = 'flex';
+  const results = data.templates.filter(t =>
+    t.name.toLowerCase().includes(q) ||
+    (t.en.subject || '').toLowerCase().includes(q) ||
+    (t.en.body || '').toLowerCase().includes(q)
+  );
+  if (!results.length) {
+    sr.innerHTML = '<div class="no-results">No templates found for "<strong>' + q + '</strong>"</div>';
+    return;
+  }
+  sr.innerHTML = results.map(t => {
+    const cat = data.categories.find(c => c.id === t.categoryId);
+    const preview = (t.en.body || '').substring(0, 120).replace(/\n/g,' ');
+    const hl = s => s.replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+    return `<div class="search-result-item" onclick="openTemplate('${t.id}');document.getElementById('search').value='';">
+      <div class="sr-name">${hl(t.name)}</div>
+      <div class="sr-cat">${cat ? cat.icon + ' ' + cat.name : ''}</div>
+      <div class="sr-preview">${hl(preview)}…</div>
+    </div>`;
+  }).join('');
+});
+
+// ── ADMIN ─────────────────────────────────────────────────────────
+function openPwModal() {
+  if (isAdmin) { toggleAdmin(false); return; }
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').style.display = 'none';
+  openModal('pw-modal');
+  setTimeout(() => document.getElementById('pw-input').focus(), 100);
+}
+
+function checkPw() {
+  const val = document.getElementById('pw-input').value;
+  if (val === ADMIN_PW) {
+    closeModal('pw-modal');
+    toggleAdmin(true);
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function toggleAdmin(on) {
+  isAdmin = on;
+  const btn = document.getElementById('admin-btn');
+  const banner = document.getElementById('admin-banner');
+  if (on) {
+    btn.textContent = '⚙ Admin: ON';
+    btn.classList.add('active');
+    banner.classList.add('show');
+    toast('Admin mode unlocked');
+  } else {
+    btn.textContent = '⚙ Admin';
+    btn.classList.remove('active');
+    banner.classList.remove('show');
+    toast('Admin mode disabled');
+  }
+  renderTree();
+  if (currentTplId) {
+    document.getElementById('tv-actions').className = `tpl-edit-actions ${isAdmin ? 'show' : ''}`;
+  }
+}
+
+// ── ADD / EDIT TEMPLATE ───────────────────────────────────────────
+function openAddTplModal(catId) {
+  editingTplId = null;
+  document.getElementById('tpl-modal-title').textContent = 'Add Template';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-subject-en').value = '';
+  document.getElementById('f-body-en').value = '';
+  document.getElementById('f-subject-es').value = '';
+  document.getElementById('f-body-es').value = '';
+  document.getElementById('f-subject-fr').value = '';
+  document.getElementById('f-body-fr').value = '';
+  populateCatSelect(catId);
+  openModal('tpl-modal');
+}
+
+function openEditModal() {
+  const tpl = data.templates.find(t => t.id === currentTplId);
+  if (!tpl) return;
+  editingTplId = tpl.id;
+  document.getElementById('tpl-modal-title').textContent = 'Edit Template';
+  document.getElementById('f-name').value = tpl.name;
+  document.getElementById('f-subject-en').value = tpl.en?.subject || '';
+  document.getElementById('f-body-en').value = tpl.en?.body || '';
+  document.getElementById('f-subject-es').value = tpl.es?.subject || '';
+  document.getElementById('f-body-es').value = tpl.es?.body || '';
+  document.getElementById('f-subject-fr').value = tpl.fr?.subject || '';
+  document.getElementById('f-body-fr').value = tpl.fr?.body || '';
+  populateCatSelect(tpl.categoryId);
+  openModal('tpl-modal');
+}
+
+function populateCatSelect(selectedId) {
+  const sel = document.getElementById('f-cat');
+  sel.innerHTML = data.categories.map(c =>
+    `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.icon} ${c.name}</option>`
+  ).join('');
+}
+
+function saveTemplate() {
+  const name    = document.getElementById('f-name').value.trim();
+  const catId   = document.getElementById('f-cat').value;
+  const subEn   = document.getElementById('f-subject-en').value.trim();
+  const bodyEn  = document.getElementById('f-body-en').value.trim();
+  const subEs   = document.getElementById('f-subject-es').value.trim();
+  const bodyEs  = document.getElementById('f-body-es').value.trim();
+  const subFr   = document.getElementById('f-subject-fr').value.trim();
+  const bodyFr  = document.getElementById('f-body-fr').value.trim();
+  if (!name || !subEn || !bodyEn) { alert('Please fill in Name, English Subject and English Body.'); return; }
+
+  if (editingTplId) {
+    const tpl = data.templates.find(t => t.id === editingTplId);
+    tpl.name = name; tpl.categoryId = catId;
+    tpl.en = { subject: subEn, body: bodyEn };
+    tpl.es = { subject: subEs || subEn, body: bodyEs || bodyEn };
+    tpl.fr = { subject: subFr || subEn, body: bodyFr || bodyEn };
+    currentTplId = editingTplId;
+    toast('Template updated ✓');
+  } else {
+    const newTpl = {
+      id: 't' + Date.now(), categoryId: catId, name,
+      en: { subject: subEn, body: bodyEn },
+      es: { subject: subEs || subEn, body: bodyEs || bodyEn },
+      fr: { subject: subFr || subEn, body: bodyFr || bodyEn },
+    };
+    data.templates.push(newTpl);
+    currentTplId = newTpl.id;
+    toast('Template added ✓');
+  }
+  saveData(data);
+  closeModal('tpl-modal');
+  renderTree();
+  openTemplate(currentTplId);
+}
+
+// ── DELETE TEMPLATE ───────────────────────────────────────────────
+function confirmDelete() {
+  const tpl = data.templates.find(t => t.id === currentTplId);
+  if (!tpl) return;
+  document.getElementById('del-name').textContent = `"${tpl.name}"`;
+  openModal('del-modal');
+}
+
+function deleteTemplate() {
+  data.templates = data.templates.filter(t => t.id !== currentTplId);
+  saveData(data);
+  currentTplId = null;
+  closeModal('del-modal');
+  renderTree();
+  document.getElementById('template-view').style.display = 'none';
+  document.getElementById('welcome').style.display = 'flex';
+  toast('Template deleted');
+}
+
+// ── CATEGORIES ────────────────────────────────────────────────────
+function openAddCatModal() {
+  editingCatId = null;
+  document.getElementById('cat-modal-title').textContent = 'Add Category';
+  document.getElementById('f-cat-name').value = '';
+  document.getElementById('f-cat-icon').value = '';
+  openModal('cat-modal');
+}
+
+function openEditCatModal(id) {
+  const cat = data.categories.find(c => c.id === id);
+  if (!cat) return;
+  editingCatId = id;
+  document.getElementById('cat-modal-title').textContent = 'Edit Category';
+  document.getElementById('f-cat-name').value = cat.name;
+  document.getElementById('f-cat-icon').value = cat.icon;
+  openModal('cat-modal');
+}
+
+function saveCategory() {
+  const name = document.getElementById('f-cat-name').value.trim();
+  const icon = document.getElementById('f-cat-icon').value.trim() || '📁';
+  if (!name) { alert('Please enter a category name.'); return; }
+  if (editingCatId) {
+    const cat = data.categories.find(c => c.id === editingCatId);
+    cat.name = name; cat.icon = icon;
+    toast('Category updated ✓');
+  } else {
+    data.categories.push({ id: 'cat-' + Date.now(), name, icon });
+    toast('Category added ✓');
+  }
+  saveData(data);
+  closeModal('cat-modal');
+  renderTree();
+}
+
+function deleteCat(id) {
+  const tplCount = data.templates.filter(t => t.categoryId === id).length;
+  const msg = tplCount > 0
+    ? `This category has ${tplCount} template(s). Deleting it will also delete all its templates. Continue?`
+    : 'Delete this category?';
+  if (!confirm(msg)) return;
+  data.categories = data.categories.filter(c => c.id !== id);
+  data.templates  = data.templates.filter(t => t.categoryId !== id);
+  if (data.templates.findIndex(t => t.id === currentTplId) === -1) currentTplId = null;
+  saveData(data);
+  renderTree();
+  if (!currentTplId) {
+    document.getElementById('template-view').style.display = 'none';
+    document.getElementById('welcome').style.display = 'flex';
+  }
+  toast('Category deleted');
+}
+
+// ── MODAL HELPERS ─────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+});
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+
+// ── EXPORT HTML ───────────────────────────────────────────────────
+function exportHTML() {
+  // Get current data
+  const cats = JSON.stringify(data.categories);
+  const tpls = JSON.stringify(data.templates);
+
+  // Read current page source and inject updated data
+  const src = document.documentElement.outerHTML;
+
+  // Replace the DEFAULT_CATEGORIES and DEFAULT_TEMPLATES with current data
+  // We inject a small override script right before <script>
+// Auto-injected by Export — overrides defaults with saved data
+(function(){
+  try {
+    localStorage.setItem('dce_categories', "[{\"id\":\"payroll\",\"name\":\"Payroll\",\"icon\":\"📁\"},{\"id\":\"returned-paper\",\"name\":\"Returned Paper CE\",\"icon\":\"📁\"},{\"id\":\"not-returned\",\"name\":\"Didn't Return Paper CE\",\"icon\":\"📁\"},{\"id\":\"code-redeemed\",\"name\":\"Code Redeemed No Enrolment\",\"icon\":\"📁\"},{\"id\":\"opted-out\",\"name\":\"Opted Out\",\"icon\":\"📁\"},{\"id\":\"approved-not-issued\",\"name\":\"Approved Not Yet Issued\",\"icon\":\"📁\"},{\"id\":\"rejected\",\"name\":\"Rejected Enrolment\",\"icon\":\"📁\"},{\"id\":\"past-appointment\",\"name\":\"Past Appointment\",\"icon\":\"📁\"},{\"id\":\"client-delay\",\"name\":\"Client Delay\",\"icon\":\"⏸️\"}]");
+    localStorage.setItem('dce_templates',  "[{\"id\":\"t1\",\"categoryId\":\"payroll\",\"name\":\"First Contact — Payroll\",\"en\":{\"subject\":\"Your DCE Enrolment — Action Required | [Beneficiary Name]\",\"body\":\"Dear [Beneficiary Name],\\n\\nI hope this message finds you well.\\n\\nMy name is [Agent Name] and I am contacting you regarding your Digital Certificate of Enrolment (DCE) for the current cycle.\\n\\nOur records show that you are listed under the [Month Year] payroll and your DCE issuance is now due. Enrolling digitally is quick, secure, and ensures your benefits are processed without delay.\\n\\nTo proceed, please contact us at your earliest convenience using the details below, or visit your nearest enrolment point.\\n\\n📌 UID: [UID]\\n📅 Deadline: [Deadline Date]\\n\\nShould you have any questions or require assistance, please do not hesitate to reach out.\\n\\nKind regards,\\n[Agent Name]\\nDCE Issuance Team\"},\"es\":{\"subject\":\"Su inscripción DCE — Acción requerida | [Nombre del beneficiario]\",\"body\":\"Estimado/a [Nombre del beneficiario],\\n\\nEspero que este mensaje le encuentre bien.\\n\\nMe llamo [Nombre del agente] y me pongo en contacto con usted en relación con su Certificado Digital de Inscripción (DCE) para el ciclo actual.\\n\\nNuestros registros muestran que usted figura en la nómina de [Mes Año] y su emisión de DCE ya es necesaria. La inscripción digital es rápida, segura y garantiza que sus beneficios se procesen sin demora.\\n\\nPara continuar, comuníquese con nosotros a la brevedad posible utilizando los datos a continuación, o visite su punto de inscripción más cercano.\\n\\n📌 UID: [UID]\\n📅 Fecha límite: [Fecha límite]\\n\\nSi tiene alguna pregunta o necesita asistencia, no dude en comunicarse con nosotros.\\n\\nAtentamente,\\n[Nombre del agente]\\nEquipo de Emisión DCE\"},\"fr\":{\"subject\":\"Votre inscription DCE — Action requise | [Nom du bénéficiaire]\",\"body\":\"Cher/Chère [Nom du bénéficiaire],\\n\\nJ'espère que ce message vous trouve en bonne santé.\\n\\nJe m'appelle [Nom de l'agent] et je vous contacte au sujet de votre Certificat Numérique d'Inscription (DCE) pour le cycle en cours.\\n\\nNos dossiers indiquent que vous figurez sur la liste de paie de [Mois Année] et que l'émission de votre DCE est désormais nécessaire. L'inscription numérique est rapide, sécurisée et garantit que vos prestations sont traitées sans délai.\\n\\nPour procéder, veuillez nous contacter dans les meilleurs délais en utilisant les coordonnées ci-dessous, ou visitez votre point d'inscription le plus proche.\\n\\n📌 UID : [UID]\\n📅 Date limite : [Date limite]\\n\\nSi vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter.\\n\\nCordialement,\\n[Nom de l'agent]\\nÉquipe d'émission DCE\"}},{\"id\":\"t2\",\"categoryId\":\"payroll\",\"name\":\"Follow-up — No Response\",\"en\":{\"subject\":\"Follow-Up: DCE Enrolment Pending | [Beneficiary Name] | [UID]\",\"body\":\"Dear [Beneficiary Name],\\n\\nThis is a follow-up to our previous message regarding your DCE enrolment.\\n\\nWe have not yet received a response and would like to remind you that your enrolment deadline is approaching on [Deadline Date].\\n\\nPlease contact us as soon as possible to avoid any disruption to your benefits.\\n\\n📌 UID: [UID]\\n📞 Contact: [Contact Number / Email]\\n\\nWe are here to assist you through the process.\\n\\nKind regards,\\n[Agent Name]\\nDCE Issuance Team\"},\"es\":{\"subject\":\"Seguimiento: inscripción DCE pendiente | [Nombre del beneficiario] | [UID]\",\"body\":\"Estimado/a [Nombre del beneficiario],\\n\\nEste es un seguimiento a nuestro mensaje anterior sobre su inscripción DCE.\\n\\nAún no hemos recibido respuesta y nos gustaría recordarle que la fecha límite de su inscripción se acerca el [Fecha límite].\\n\\nPor favor, comuníquese con nosotros a la brevedad para evitar cualquier interrupción en sus beneficios.\\n\\n📌 UID: [UID]\\n📞 Contacto: [Número de contacto / Correo electrónico]\\n\\nEstamos aquí para asistirle durante el proceso.\\n\\nAtentamente,\\n[Nombre del agente]\\nEquipo de Emisión DCE\"},\"fr\":{\"subject\":\"Relance : inscription DCE en attente | [Nom du bénéficiaire] | [UID]\",\"body\":\"Cher/Chère [Nom du bénéficiaire],\\n\\nCeci est un suivi de notre message précédent concernant votre inscription DCE.\\n\\nNous n'avons pas encore reçu de réponse et nous souhaitons vous rappeler que votre date limite d'inscription approche le [Date limite].\\n\\nVeuillez nous contacter dès que possible afin d'éviter toute interruption de vos prestations.\\n\\n📌 UID : [UID]\\n📞 Contact : [Numéro de contact / E-mail]\\n\\nNous sommes là pour vous accompagner tout au long du processus.\\n\\nCordialement,\\n[Nom de l'agent]\\nÉquipe d'émission DCE\"}},{\"id\":\"t3\",\"categoryId\":\"opted-out\",\"name\":\"Re-engagement — Opted Out\",\"en\":{\"subject\":\"We'd Like to Reconnect | [Beneficiary Name] | [UID]\",\"body\":\"Dear [Beneficiary Name],\\n\\nI hope you are doing well.\\n\\nWe understand that you previously chose to opt out of the Digital Certificate of Enrolment (DCE). We completely respect your decision and are reaching out only to let you know that the process has been improved and we are happy to assist if you wish to reconsider.\\n\\nThe DCE is now faster, more accessible, and fully secure. Many beneficiaries who were initially hesitant have found it much easier than expected.\\n\\nIf you would like to give it another try, or simply have questions, please feel free to contact us. There is absolutely no pressure.\\n\\n📌 UID: [UID]\\n📞 Contact: [Contact Number / Email]\\n\\nThank you for your time.\\n\\nKind regards,\\n[Agent Name]\\nDCE Issuance Team\"},\"es\":{\"subject\":\"Nos gustaría volver a conectar con usted | [Nombre del beneficiario] | [UID]\",\"body\":\"Estimado/a [Nombre del beneficiario],\\n\\nEsperamos que se encuentre bien.\\n\\nEntendemos que anteriormente eligió no participar en el Certificado Digital de Inscripción (DCE). Respetamos completamente su decisión y nos comunicamos solo para informarle que el proceso ha mejorado y estamos disponibles para asistirle si desea reconsiderar.\\n\\nEl DCE es ahora más rápido, accesible y completamente seguro. Muchos beneficiarios que inicialmente dudaron lo encontraron mucho más sencillo de lo esperado.\\n\\nSi desea intentarlo nuevamente, o simplemente tiene preguntas, no dude en contactarnos. No hay ninguna presión.\\n\\n📌 UID: [UID]\\n📞 Contacto: [Número de contacto / Correo electrónico]\\n\\nGracias por su tiempo.\\n\\nAtentamente,\\n[Nombre del agente]\\nEquipo de Emisión DCE\"},\"fr\":{\"subject\":\"Nous souhaitons reprendre contact | [Nom du bénéficiaire] | [UID]\",\"body\":\"Cher/Chère [Nom du bénéficiaire],\\n\\nJ'espère que vous allez bien.\\n\\nNous comprenons que vous avez précédemment choisi de ne pas participer au Certificat Numérique d'Inscription (DCE). Nous respectons entièrement votre décision et vous contactons uniquement pour vous informer que le processus a été amélioré et que nous sommes disponibles pour vous aider si vous souhaitez reconsidérer.\\n\\nLe DCE est désormais plus rapide, plus accessible et entièrement sécurisé. De nombreux bénéficiaires initialement hésitants l'ont trouvé bien plus simple que prévu.\\n\\nSi vous souhaitez réessayer, ou si vous avez simplement des questions, n'hésitez pas à nous contacter. Il n'y a aucune pression.\\n\\n📌 UID : [UID]\\n📞 Contact : [Numéro de contact / E-mail]\\n\\nMerci pour votre temps.\\n\\nCordialement,\\n[Nom de l'agent]\\nÉquipe d'émission DCE\"}},{\"id\":\"t4\",\"categoryId\":\"not-returned\",\"name\":\"Paper CE Not Returned — First Notice\",\"en\":{\"subject\":\"Paper CE Not Received | Action Required | [Beneficiary Name] | [UID]\",\"body\":\"Dear [Beneficiary Name],\\n\\nI hope this message finds you well.\\n\\nOur records indicate that your Paper Certificate of Enrolment (CE) for [Year] has not yet been returned to our office.\\n\\nReturning your paper CE is an important step to ensure your enrolment status is updated and your benefits continue without interruption.\\n\\nPlease arrange to return the form at your earliest convenience, or contact us if you need assistance or a replacement copy.\\n\\n📌 UID: [UID]\\n📅 Please return by: [Deadline Date]\\n📍 Return to: [Office Address / Contact Details]\\n\\nIf you have already sent your form, please disregard this message.\\n\\nKind regards,\\n[Agent Name]\\nDCE Issuance Team\"},\"es\":{\"subject\":\"CE en papel no recibido | Acción requerida | [Nombre del beneficiario] | [UID]\",\"body\":\"Estimado/a [Nombre del beneficiario],\\n\\nEsperamos que se encuentre bien.\\n\\nNuestros registros indican que su Certificado de Inscripción (CE) en papel para [Año] aún no ha sido devuelto a nuestra oficina.\\n\\nDevolver su CE en papel es un paso importante para garantizar que su estado de inscripción sea actualizado y sus beneficios continúen sin interrupción.\\n\\nPor favor, tramite la devolución del formulario a la brevedad posible, o contáctenos si necesita asistencia o una copia de reemplazo.\\n\\n📌 UID: [UID]\\n📅 Por favor devuelva antes de: [Fecha límite]\\n📍 Devolver a: [Dirección de la oficina / Datos de contacto]\\n\\nSi ya ha enviado su formulario, por favor ignore este mensaje.\\n\\nAtentamente,\\n[Nombre del agente]\\nEquipo de Emisión DCE\"},\"fr\":{\"subject\":\"CE papier non reçu | Action requise | [Nom du bénéficiaire] | [UID]\",\"body\":\"Cher/Chère [Nom du bénéficiaire],\\n\\nJ'espère que ce message vous trouve en bonne santé.\\n\\nNos dossiers indiquent que votre Certificat d'Inscription (CE) papier pour [Année] n'a pas encore été retourné à notre bureau.\\n\\nLe retour de votre CE papier est une étape importante pour garantir que votre statut d'inscription est mis à jour et que vos prestations continuent sans interruption.\\n\\nVeuillez organiser le retour du formulaire dès que possible, ou nous contacter si vous avez besoin d'aide ou d'un exemplaire de remplacement.\\n\\n📌 UID : [UID]\\n📅 À retourner avant le : [Date limite]\\n📍 À retourner à : [Adresse du bureau / Coordonnées]\\n\\nSi vous avez déjà envoyé votre formulaire, veuillez ignorer ce message.\\n\\nCordialement,\\n[Nom de l'agent]\\nÉquipe d'émission DCE\"}},{\"id\":\"t5\",\"categoryId\":\"client-delay\",\"name\":\"Client Delay — On-Hold Notification\",\"en\":{\"subject\":\"Your DCE Enrolment — On Hold | [Beneficiary Name] | [UID]\",\"body\":\"Dear [Beneficiary Name],\\n\\nThank you for your continued patience.\\n\\nWe are writing to let you know that your DCE enrolment has been placed on hold as per your request / due to [reason for delay].\\n\\nWe will follow up with you on [Follow-up Date] to check on your availability and progress your enrolment at that time.\\n\\nIf your situation changes before then and you are ready to proceed sooner, please do not hesitate to contact us.\\n\\n📌 UID: [UID]\\n📞 Contact: [Contact Number / Email]\\n\\nWe look forward to supporting you through the process.\\n\\nKind regards,\\n[Agent Name]\\nDCE Issuance Team\"},\"es\":{\"subject\":\"Su inscripción DCE — En espera | [Nombre del beneficiario] | [UID]\",\"body\":\"Estimado/a [Nombre del beneficiario],\\n\\nGracias por su continua paciencia.\\n\\nLe escribimos para informarle que su inscripción DCE ha sido puesta en espera según su solicitud / debido a [motivo del retraso].\\n\\nNos comunicaremos con usted el [Fecha de seguimiento] para verificar su disponibilidad y avanzar con su inscripción en ese momento.\\n\\nSi su situación cambia antes de esa fecha y está listo/a para continuar antes, no dude en contactarnos.\\n\\n📌 UID: [UID]\\n📞 Contacto: [Número de contacto / Correo electrónico]\\n\\nEsperamos poder apoyarle durante el proceso.\\n\\nAtentamente,\\n[Nombre del agente]\\nEquipo de Emisión DCE\"},\"fr\":{\"subject\":\"Votre inscription DCE — En attente | [Nom du bénéficiaire] | [UID]\",\"body\":\"Cher/Chère [Nom du bénéficiaire],\\n\\nMerci pour votre patience continue.\\n\\nNous vous écrivons pour vous informer que votre inscription DCE a été mise en attente conformément à votre demande / en raison de [raison du retard].\\n\\nNous vous recontacterons le [Date de suivi] pour vérifier votre disponibilité et faire avancer votre inscription à ce moment.\\n\\nSi votre situation change avant cette date et que vous êtes prêt(e) à procéder plus tôt, n'hésitez pas à nous contacter.\\n\\n📌 UID : [UID]\\n📞 Contact : [Numéro de contact / E-mail]\\n\\nNous sommes impatients de vous accompagner tout au long du processus.\\n\\nCordialement,\\n[Nom de l'agent]\\nÉquipe d'émission DCE\"}},{\"id\":\"t1784613836826\",\"categoryId\":\"returned-paper\",\"name\":\"First contact\",\"en\":{\"subject\":\"Digital CE option is available\",\"body\":\"This is just a test\"},\"es\":{\"subject\":\"Digital CE option is available\",\"body\":\"This is just a test\"},\"fr\":{\"subject\":\"Digital CE option is available\",\"body\":\"This is just a test\"}}]");
+  } catch(e) {}
+})();
+</script>
+</body>
+  const overrideScript = `<script>
+// Auto-injected by Export — overrides defaults with saved data
+(function(){
+  try {
+    localStorage.setItem('dce_categories', ${JSON.stringify(cats)});
+    localStorage.setItem('dce_templates',  ${JSON.stringify(tpls)});
+  } catch(e) {}
+})();
+<\/script>`;
+
+  // Build final HTML: take the source and inject override before </body>
+  let finalHTML = src.replace('</body>', overrideScript + '\n</body>');
+
+  // Also update the DEFAULT_CATEGORIES and DEFAULT_TEMPLATES inline
+  // so even fresh browsers without localStorage get the right data
+  const catStr = 'const DEFAULT_CATEGORIES = ' + cats + ';';
+  const tplStr = 'const DEFAULT_TEMPLATES = ' + tpls + ';';
+  finalHTML = finalHTML.replace(
+    /const DEFAULT_CATEGORIES = \[.*?\];/s, catStr
+  ).replace(
+    /const DEFAULT_TEMPLATES = \[.*?\];/s, tplStr
+  );
+
+  // Download
+  const blob = new Blob([finalHTML], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'index.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('✅ File downloaded! Upload index.html to GitHub to publish changes.');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+renderTree();
+</script>
+
+
+</body></html>
